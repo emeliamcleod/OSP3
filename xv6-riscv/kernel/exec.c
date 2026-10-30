@@ -7,6 +7,7 @@
 #include "defs.h"
 #include "elf.h"
 
+
 static int loadseg(pde_t *, uint64, struct inode *, uint, uint);
 
 // map ELF permissions to PTE permission bits.
@@ -137,6 +138,10 @@ kexec(char *path, char **argv)
   p->trapframe->sp = sp;         // initial stack pointer
   proc_freepagetable(oldpagetable, oldsz);
 
+  if(p->pid==1)
+  {
+    vmprint(p->pagetable);
+  }
   return argc; // this ends up in a0, the first argument to main(argc, argv)
 
 bad:

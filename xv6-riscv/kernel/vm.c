@@ -7,6 +7,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "fs.h"
+#include <stdio.h>
 
 /*
  * the kernel's page table.
@@ -489,3 +490,46 @@ ismapped(pagetable_t pagetable, uint64 va)
   }
   return 0;
 }
+
+//NEW STUFF HERE
+void vmprintHelper(pagetable_t pagetable,int level)
+//this is the function to go from the trunk all the way to leaves 
+{
+  for (int i = 0; i < 512; i++){
+  //this loops over the page table
+   //this takes the current entry in the page table and set it to pte
+    pte_t pte = pagetable[i];
+    if(pte & PTE_V){
+      // this confirms it is valid before printing
+      if (level ==1){
+       printk(".. %d pte %p pa %p \n", i, (void*)pte, (void*)PTE2PA(pte)); 
+       //prints the page table index, the page table entry as a void*, and the physical address as a void*
+       //printk is used because we are printing from the kernel
+       //the pg table level determines the number of dots  
+      }
+      else if (level ==2) {
+         printk(".. .. %d pte %p pa %p \n", i, (void*)pte, (void*)PTE2PA(pte)); 
+      }
+      else if (level ==3) {
+         printk(".. ..  .. %d pte %p pa %p \n", i, (void*)pte, (void*)PTE2PA(pte)); 
+      }
+      if (level < 3){
+        //this recursively calls vmprintHelper so that all the entries in each level are printed
+        //max level predetermined as 3 so it will stop calling it when the level is 3
+        vmprintHelper((pagetable_t)PTE2PA(pte), (level+1));
+      }
+      } 
+
+  }
+}
+
+//NEW STUFF HERE
+void
+vmprint(pagetable_t pagetable)
+//this is the funciton that actually prints the page table
+{
+  printk("page table %p \n", pagetable);
+  vmprintHelper(pagetable, 1);
+
+}
+
