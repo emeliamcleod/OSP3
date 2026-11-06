@@ -154,6 +154,7 @@ UPROGS=\
 	$U/_getpinfo\
 	$U/_hardwork\
 	$U/_setstride\
+	$U/_pgaccess_test\
 
 fs.img: mkfs/mkfs README $(UPROGS)
 	mkfs/mkfs fs.img README $(UPROGS)

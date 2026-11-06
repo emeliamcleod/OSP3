@@ -34,6 +34,8 @@ struct pstat;
 int getpinfo(struct pstat *);
 //NEW ENTRY
 int setstride(int);
+//new: pgaccess
+int pgaccess(void *, int, void *);
 
 // ulib.c
 int stat(const char *, struct stat *);

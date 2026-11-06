@@ -526,10 +526,52 @@ void vmprintHelper(pagetable_t pagetable,int level)
 //NEW STUFF HERE
 void
 vmprint(pagetable_t pagetable)
-//this is the funciton that actually prints the page table
+//this is the function that actually prints the page table
 {
   printk("page table %p \n", pagetable);
   vmprintHelper(pagetable, 1);
 
 }
+
+//NEW: PGACCESS FUNCTION
+//GOAL - tell the user program what memory pages have been accessed
+int
+pgaccess(pagetable_t pagetable, uint64 start, int num_pages, uint64 useraddr)
+{
+  //mask: stores which pages have been accessed - starts at zero (no pages marked)
+  uint mask = 0;
+  pte_t *pte; //holds address of page table entry returned by walk()
+
+
+  //find number of pages
+  if (num_pages < 0 || num_pages > 32){
+    return -1; //bitmask is 32 bit integer, so 32 pages?
+  }
+
+
+  //loop through the pages
+  for (int i = 0; i < num_pages; i++){
+    //virtual address of next page- start + i*pgsize
+    pte = walk(pagetable, start + i*PGSIZE, 0);
+
+    if (pte == 0){
+      return -1; //cannot find the entry 
+    }
+
+    //check whether the page was accessed - accessed bit is 1
+    if (*pte & PTE_A){
+      mask = mask | (1U << i ); //mark this page as accessed
+      *pte = *pte ^ PTE_A; // clear the accessed bit for the next check with XOR
+    }
+  }
+
+
+  //user copyout to the user_addr
+  //&memory address of the mask, and specify size? - myproc()->size? needed for the copyout arg
+  if (copyout(pagetable, myproc()->sz, useraddr, (char *)&mask, sizeof(mask)) < 0){
+    return -1;
+  }
+return 0;
+}
+
 
