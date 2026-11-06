@@ -178,6 +178,9 @@ int             ismapped(pagetable_t, uint64);
 uint64          vmfault(pagetable_t, uint64, uint64, int);
 void            vmprint(pagetable_t pagetable);
 
+//add new here: for pgaccess
+int             pgaccess(pagetable_t, uint64, int, uint64);
+
 // plic.c
 void            plicinit(void);
 void            plicinithart(void);

@@ -136,3 +136,22 @@ sys_setstride(void)
   argint(0,&strideLength);
   return setstride(strideLength);
 }
+
+
+//new entry for project 3
+uint64
+sys_pgaccess(void)
+{
+  //all arguments for the actual syscall
+  uint64 start;
+  int num_pages;
+  uint64 useraddr; 
+  
+  //three arguments:
+  argaddr(0, &start);
+  argint(1, &num_pages);
+  argaddr(2, &useraddr); 
+
+
+  return pgaccess(myproc()->pagetable, start, num_pages, useraddr);
+}
