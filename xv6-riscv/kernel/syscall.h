@@ -26,3 +26,5 @@
 #define SYS_getpinfo 24
 //NEW ENTRY
 #define SYS_setstride 25
+//new: pgaccess
+#define SYS_pgaccess 26
