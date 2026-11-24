@@ -138,6 +138,20 @@ found:
     return 0;
   }
 
+  //allocate a usyscall page
+  if ((p->usyscall = (struct usyscall *)kalloc()) == 0){
+    pte_t *pte; //holds address of page table entry returned by walk()
+    // p->pagetable = pte;
+    if (*pte & PTE_W){
+      *pte = *pte ^ PTE_W; //clears the "write access" bit with XOR
+    }
+    int process_pid = getpid();
+    
+    freeproc(p);
+    release(&p->lock);
+    return 0;
+  }
+
   // An empty user page table.
   p->pagetable = proc_pagetable(p);
   if (p->pagetable == 0) {
